@@ -1,0 +1,666 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Martel — Enterprise Agent Deployment</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Bebas+Neue&family=DM+Mono:wght@300;400;500&family=Cormorant+Garamond:ital,wght@0,300;0,400;1,300&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --black: #0d0d0d;
+    --gold: #BA7517;
+    --gold-dim: #7a4e0f;
+    --bone: #f0ebe0;
+    --ash: #888780;
+    --dark: #1a1a18;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    background: var(--black);
+    color: var(--bone);
+    font-family: 'DM Mono', monospace;
+    overflow-x: hidden;
+  }
+
+  /* ===== NAV ===== */
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+    border-bottom: 1px solid rgba(186,117,23,0.15);
+    background: rgba(13,13,13,0.92);
+    backdrop-filter: blur(12px);
+  }
+
+  .nav-logo {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    text-decoration: none;
+  }
+
+  .nav-mark {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+  }
+
+  .nav-head {
+    width: 32px;
+    height: 9px;
+    background: var(--gold);
+    border-radius: 1px;
+  }
+
+  .nav-shaft {
+    width: 9px;
+    height: 22px;
+    background: var(--bone);
+    border-radius: 0 0 1px 1px;
+  }
+
+  .nav-name {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 22px;
+    letter-spacing: 3px;
+    color: var(--bone);
+  }
+
+  .nav-links {
+    display: flex;
+    align-items: center;
+    gap: 40px;
+    list-style: none;
+  }
+
+  .nav-links a {
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--ash);
+    text-decoration: none;
+    text-transform: uppercase;
+    transition: color 0.2s;
+  }
+
+  .nav-links a:hover { color: var(--bone); }
+
+  .nav-cta {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--black) !important;
+    background: var(--gold);
+    padding: 10px 20px;
+    text-decoration: none;
+    transition: opacity 0.2s;
+  }
+
+  .nav-cta:hover { opacity: 0.85; }
+
+  /* ===== HERO ===== */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    padding: 0 48px 80px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero-bg {
+    position: absolute;
+    inset: 0;
+    background: 
+      linear-gradient(135deg, transparent 60%, rgba(186,117,23,0.06) 100%),
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 80px,
+        rgba(186,117,23,0.03) 80px,
+        rgba(186,117,23,0.03) 81px
+      ),
+      repeating-linear-gradient(
+        90deg,
+        transparent,
+        transparent 80px,
+        rgba(186,117,23,0.03) 80px,
+        rgba(186,117,23,0.03) 81px
+      );
+  }
+
+  .hero-slash {
+    position: absolute;
+    top: 0; right: 0;
+    width: 0; height: 0;
+    border-style: solid;
+    border-width: 0 400px 400px 0;
+    border-color: transparent rgba(186,117,23,0.07) transparent transparent;
+  }
+
+  .hero-tag {
+    font-size: 10px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.2s forwards;
+  }
+
+  .hero-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(72px, 10vw, 140px);
+    line-height: 0.92;
+    letter-spacing: 2px;
+    color: var(--bone);
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.4s forwards;
+  }
+
+  .hero-headline .gold { color: var(--gold); }
+
+  .hero-sub {
+    max-width: 560px;
+    font-size: 14px;
+    line-height: 1.8;
+    color: var(--ash);
+    margin-bottom: 48px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.6s forwards;
+  }
+
+  .hero-sub strong {
+    color: var(--bone);
+    font-weight: 500;
+  }
+
+  .hero-actions {
+    display: flex;
+    align-items: center;
+    gap: 32px;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 0.8s forwards;
+  }
+
+  .btn-primary {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--black);
+    background: var(--gold);
+    padding: 16px 32px;
+    text-decoration: none;
+    display: inline-block;
+    transition: opacity 0.2s;
+  }
+
+  .btn-primary:hover { opacity: 0.85; }
+
+  .btn-secondary {
+    font-size: 11px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--ash);
+    text-decoration: none;
+    transition: color 0.2s;
+  }
+
+  .btn-secondary:hover { color: var(--bone); }
+
+  .hero-scroll {
+    position: absolute;
+    right: 48px;
+    bottom: 80px;
+    writing-mode: vertical-rl;
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--gold-dim);
+    text-transform: uppercase;
+    opacity: 0;
+    animation: fadeUp 0.8s ease 1s forwards;
+  }
+
+  /* ===== DIVIDER ===== */
+  .divider {
+    height: 1px;
+    background: linear-gradient(to right, var(--gold), transparent);
+    opacity: 0.3;
+    margin: 0 48px;
+  }
+
+  /* ===== HOW IT WORKS ===== */
+  .section {
+    padding: 120px 48px;
+  }
+
+  .section-tag {
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .section-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(40px, 5vw, 72px);
+    letter-spacing: 2px;
+    color: var(--bone);
+    margin-bottom: 64px;
+    line-height: 1;
+  }
+
+  .steps {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 2px;
+  }
+
+  .step {
+    background: var(--dark);
+    padding: 48px 40px;
+    position: relative;
+    overflow: hidden;
+    transition: background 0.3s;
+  }
+
+  .step:hover { background: #222220; }
+
+  .step::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 2px;
+    background: var(--gold);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .step:hover::before { opacity: 1; }
+
+  .step-num {
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 24px;
+    display: block;
+  }
+
+  .step-title {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 36px;
+    letter-spacing: 2px;
+    color: var(--bone);
+    margin-bottom: 16px;
+    line-height: 1;
+  }
+
+  .step-body {
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--ash);
+  }
+
+  .step-duration {
+    display: inline-block;
+    margin-top: 24px;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--gold-dim);
+    border: 1px solid var(--gold-dim);
+    padding: 4px 10px;
+    opacity: 0.6;
+  }
+
+  /* ===== MISSION ===== */
+  .mission {
+    padding: 120px 48px;
+    background: var(--dark);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .mission::before {
+    content: 'M';
+    position: absolute;
+    right: -40px;
+    bottom: -80px;
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: 600px;
+    color: var(--bone);
+    opacity: 0.02;
+    line-height: 1;
+    pointer-events: none;
+  }
+
+  .mission-lines {
+    max-width: 900px;
+  }
+
+  .mission-line {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: clamp(28px, 4vw, 52px);
+    font-weight: 300;
+    line-height: 1.4;
+    color: var(--bone);
+    opacity: 0.4;
+    transition: opacity 0.3s;
+    cursor: default;
+    padding: 8px 0;
+    border-bottom: 1px solid rgba(186,117,23,0.1);
+  }
+
+  .mission-line:hover { opacity: 1; }
+  .mission-line.active { opacity: 1; color: var(--gold); }
+
+  /* ===== WHY ===== */
+  .why-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 2px;
+    margin-top: 64px;
+  }
+
+  .why-item {
+    background: var(--dark);
+    padding: 48px 40px;
+  }
+
+  .why-label {
+    font-size: 9px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+  }
+
+  .why-text {
+    font-family: 'Cormorant Garamond', serif;
+    font-size: 22px;
+    font-weight: 300;
+    line-height: 1.5;
+    color: var(--bone);
+  }
+
+  .why-sub {
+    margin-top: 16px;
+    font-size: 12px;
+    line-height: 1.8;
+    color: var(--ash);
+  }
+
+  /* ===== CTA ===== */
+  .cta-section {
+    padding: 160px 48px;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .cta-section::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(186,117,23,0.06) 0%, transparent 70%);
+  }
+
+  .cta-eyebrow {
+    font-size: 9px;
+    letter-spacing: 4px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+
+  .cta-headline {
+    font-family: 'Bebas Neue', sans-serif;
+    font-size: clamp(52px, 8vw, 120px);
+    letter-spacing: 2px;
+    line-height: 0.9;
+    color: var(--bone);
+    margin-bottom: 48px;
+  }
+
+  .cta-sub {
+    font-size: 13px;
+    color: var(--ash);
+    margin-bottom: 48px;
+    letter-spacing: 1px;
+  }
+
+  /* ===== FOOTER ===== */
+  footer {
+    padding: 40px 48px;
+    border-top: 1px solid rgba(186,117,23,0.15);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .footer-left {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--gold-dim);
+  }
+
+  .footer-right {
+    font-size: 10px;
+    letter-spacing: 2px;
+    color: var(--ash);
+  }
+
+  .footer-right a {
+    color: var(--ash);
+    text-decoration: none;
+    margin-left: 24px;
+    transition: color 0.2s;
+  }
+
+  .footer-right a:hover { color: var(--bone); }
+
+  /* ===== ANIMATIONS ===== */
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(24px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  /* ===== MOBILE ===== */
+  @media (max-width: 768px) {
+    nav { padding: 16px 24px; }
+    .nav-links { display: none; }
+    .hero { padding: 0 24px 64px; }
+    .section { padding: 80px 24px; }
+    .steps { grid-template-columns: 1fr; }
+    .why-grid { grid-template-columns: 1fr; }
+    .mission { padding: 80px 24px; }
+    .cta-section { padding: 100px 24px; }
+    footer { padding: 32px 24px; flex-direction: column; gap: 16px; text-align: center; }
+    .divider { margin: 0 24px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- NAV -->
+<nav>
+  <a href="#" class="nav-logo">
+    <div class="nav-mark">
+      <div class="nav-head"></div>
+      <div class="nav-shaft"></div>
+    </div>
+    <span class="nav-name">MARTEL</span>
+  </a>
+  <ul class="nav-links">
+    <li><a href="#how">How It Works</a></li>
+    <li><a href="#why">Why Martel</a></li>
+    <li><a href="#contact" class="nav-cta">Book a Call</a></li>
+  </ul>
+</nav>
+
+<!-- HERO -->
+<section class="hero">
+  <div class="hero-bg"></div>
+  <div class="hero-slash"></div>
+
+  <p class="hero-tag">Enterprise Agent Deployment · Est. 2026 · Montevideo</p>
+
+  <h1 class="hero-headline">
+    We Go In.<br>
+    We <span class="gold">Build.</span><br>
+    It Runs.
+  </h1>
+
+  <p class="hero-sub">
+    Most companies know they need AI inside their operations.<br>
+    <strong>Nobody knows where to start.</strong><br><br>
+    We forward deploy into your business, map how work actually gets done,
+    and build the agents that replace the manual layer. No generic software.
+    No 18-month timelines. Production ready.
+  </p>
+
+  <div class="hero-actions">
+    <a href="mailto:facundo@withmartel.com" class="btn-primary">Book a Call</a>
+    <a href="#how" class="btn-secondary">How It Works →</a>
+  </div>
+
+  <span class="hero-scroll">Scroll</span>
+</section>
+
+<div class="divider"></div>
+
+<!-- HOW IT WORKS -->
+<section class="section" id="how">
+  <p class="section-tag">The Process</p>
+  <h2 class="section-title">Three Phases.<br>One Operating Layer.</h2>
+
+  <div class="steps">
+    <div class="step">
+      <span class="step-num">01 ·</span>
+      <h3 class="step-title">Forward Deploy</h3>
+      <p class="step-body">We embed inside your organization. Not on a call. Inside. We map every workflow, every handoff, every place where people spend time gathering and reconciling data instead of making decisions.</p>
+      <span class="step-duration">2–4 Weeks</span>
+    </div>
+    <div class="step">
+      <span class="step-num">02 ·</span>
+      <h3 class="step-title">Architect</h3>
+      <p class="step-body">We design the agent layer specific to how your business actually operates. Not a template. Not a demo. A system built around your stack, your processes, and your people.</p>
+      <span class="step-duration">1–2 Weeks</span>
+    </div>
+    <div class="step">
+      <span class="step-num">03 ·</span>
+      <h3 class="step-title">Build & Deploy</h3>
+      <p class="step-body">We build, test, and deploy agents into your existing systems. No migration required. The agents connect to what you already use and start replacing the manual work immediately.</p>
+      <span class="step-duration">4–12 Weeks</span>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- MISSION STATEMENT -->
+<section class="mission">
+  <p class="section-tag">The Problem</p>
+  <div class="mission-lines">
+    <p class="mission-line active">The bottleneck isn't the model.</p>
+    <p class="mission-line">It's that nobody wrote down how decisions actually get made.</p>
+    <p class="mission-line">Tribal knowledge lives in people's heads.</p>
+    <p class="mission-line">Processes live in spreadsheets nobody maintains.</p>
+    <p class="mission-line">Workflows exist only because someone once figured it out.</p>
+    <p class="mission-line">Getting that out is not a technical problem.</p>
+    <p class="mission-line" style="color: var(--gold); opacity: 1;">It's the first job. That's why we go in.</p>
+  </div>
+</section>
+
+<!-- WHY MARTEL -->
+<section class="section" id="why">
+  <p class="section-tag">Why Martel</p>
+  <h2 class="section-title">Not Software.<br>Not Consulting.<br>Deployment.</h2>
+
+  <div class="why-grid">
+    <div class="why-item">
+      <p class="why-label">No Generic Software</p>
+      <p class="why-text">Every agent is built for your specific operations. What works for a $4B manufacturer doesn't work for a 40-person SaaS company.</p>
+      <p class="why-sub">We build custom. You own what we build. No vendor lock-in, no recurring license for something that half-fits.</p>
+    </div>
+    <div class="why-item">
+      <p class="why-label">No 18-Month Timelines</p>
+      <p class="why-text">We move fast because we go in first. Understanding the operation before writing a line of code cuts delivery time in half.</p>
+      <p class="why-sub">First agents in production within weeks. Measurable results before the quarter ends.</p>
+    </div>
+    <div class="why-item">
+      <p class="why-label">Production Ready</p>
+      <p class="why-text">We don't hand you a demo. We build systems that run in your environment, handle edge cases, and don't break at 2am.</p>
+      <p class="why-sub">Guardrails, error handling, human-in-the-loop checkpoints. Built for real operations, not controlled environments.</p>
+    </div>
+    <div class="why-item">
+      <p class="why-label">The Operator Layer</p>
+      <p class="why-text">The model is a commodity. The operator who knows which process to automate first, and how to make it reliable, is not.</p>
+      <p class="why-sub">That judgment is what Martel provides. We've done the deployment work. We know where agents break and how to stop it.</p>
+    </div>
+  </div>
+</section>
+
+<div class="divider"></div>
+
+<!-- CTA -->
+<section class="cta-section" id="contact">
+  <p class="cta-eyebrow">Ready to Deploy</p>
+  <h2 class="cta-headline">Start With<br><span style="color: var(--gold)">The Audit.</span></h2>
+  <p class="cta-sub">We embed. We map. We show you exactly what to build and what it's worth.<br>No commitment beyond the first conversation.</p>
+  <a href="mailto:facundo@withmartel.com" class="btn-primary">Book a Discovery Call</a>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <p class="footer-left">Named for Charles Martel · The Hammer · 688 AD</p>
+  <div class="footer-right">
+    <a href="https://x.com/martel_ai" target="_blank">X</a>
+    <a href="https://linkedin.com/company/martelai" target="_blank">LinkedIn</a>
+    <a href="mailto:facundo@withmartel.com">Contact</a>
+  </div>
+</footer>
+
+<script>
+  // Mission lines hover cycling
+  const lines = document.querySelectorAll('.mission-line');
+  let current = 0;
+
+  setInterval(() => {
+    lines[current].classList.remove('active');
+    current = (current + 1) % (lines.length - 1);
+    lines[current].classList.add('active');
+  }, 2000);
+
+  // Scroll reveal
+  const observer = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) {
+        e.target.style.opacity = '1';
+        e.target.style.transform = 'translateY(0)';
+      }
+    });
+  }, { threshold: 0.1 });
+
+  document.querySelectorAll('.step, .why-item').forEach(el => {
+    el.style.opacity = '0';
+    el.style.transform = 'translateY(20px)';
+    el.style.transition = 'opacity 0.6s ease, transform 0.6s ease';
+    observer.observe(el);
+  });
+</script>
+
+</body>
+</html>
